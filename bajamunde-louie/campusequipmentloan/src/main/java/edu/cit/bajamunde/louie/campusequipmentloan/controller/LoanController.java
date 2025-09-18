@@ -7,33 +7,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/loans")
 public class LoanController {
+
     private final LoanService loanService;
     public LoanController(LoanService loanService) { this.loanService = loanService; }
 
     @PostMapping
-    public ResponseEntity<?> createLoan(@RequestBody Map<String, String> body) {
-        Long equipmentId = Long.valueOf(body.get("equipmentId"));
-        Long studentId = Long.valueOf(body.get("studentId"));
-        LocalDate start = LocalDate.parse(body.get("startDate"));
-        LocalDate due = LocalDate.parse(body.get("dueDate"));
-
-        Loan loan = loanService.createLoan(equipmentId, studentId, start, due);
-        return ResponseEntity.created(URI.create("/api/loans/" + loan.getId())).body(loan);
+    public ResponseEntity<Loan> createLoan(@RequestBody LoanRequest request) {
+        LocalDate start = request.getStartDate() != null ? request.getStartDate() : LocalDate.now();
+        Loan created = loanService.createLoan(request.getEquipmentId(), request.getStudentId(), start);
+        return ResponseEntity.created(URI.create("/api/loans/" + created.getId())).body(created);
     }
 
     @PostMapping("/{id}/return")
-    public ResponseEntity<?> returnLoan(@PathVariable Long id,
-                                        @RequestBody(required = false) Map<String, String> body) {
-        LocalDate returnDate = (body != null && body.get("returnDate") != null)
-                ? LocalDate.parse(body.get("returnDate"))
+    public ResponseEntity<ReturnResponse> returnLoan(@PathVariable Long id,
+                                                     @RequestBody(required = false) ReturnResponse body) {
+        LocalDate returnDate = (body != null && body.getLoan() != null && body.getLoan().getReturnDate() != null)
+                ? body.getLoan().getReturnDate()
                 : LocalDate.now();
 
-        Loan returned = loanService.returnLoan(id, returnDate);
-        return ResponseEntity.ok(returned);
+        LoanService.ReturnResult res = loanService.returnLoan(id, returnDate);
+        ReturnResponse out = new ReturnResponse(res.getLoan(), res.getPenalty());
+        return ResponseEntity.ok(out);
     }
 }

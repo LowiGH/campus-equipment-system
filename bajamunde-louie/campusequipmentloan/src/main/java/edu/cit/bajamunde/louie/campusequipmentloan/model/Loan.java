@@ -5,11 +5,12 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@Table(name = "loan")
 public class Loan {
+
     public enum Status { ON_LOAN, RETURNED, LATE }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)
@@ -20,14 +21,20 @@ public class Loan {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    @Column(name = "start_date")
     private LocalDate startDate;
+
+    @Column(name = "due_date")
     private LocalDate dueDate;
+
+    @Column(name = "return_date")
     private LocalDate returnDate;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.ON_LOAN;
 
-    // getters / setters
+    public Loan() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

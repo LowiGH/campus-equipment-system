@@ -12,12 +12,10 @@ import java.util.List;
 @RequestMapping("/api/equipment")
 public class EquipmentController {
     private final EquipmentRepository equipmentRepository;
-    public EquipmentController(EquipmentRepository equipmentRepository) {
-        this.equipmentRepository = equipmentRepository;
-    }
+    public EquipmentController(EquipmentRepository equipmentRepository) { this.equipmentRepository = equipmentRepository; }
 
     @GetMapping("/available")
-    public List<Equipment> listAvailable() {
+    public List<Equipment> getAvailable() {
         return equipmentRepository.findByAvailabilityTrue();
     }
 }

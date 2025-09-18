@@ -4,17 +4,22 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Table(name = "student")
 public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(name = "student_no", unique = true)
     private String studentNo;
+
     private String name;
     private String email;
 
-    // getters / setters
+    public Student() {}
+    public Student(String studentNo, String name, String email) {
+        this.studentNo = studentNo; this.name = name; this.email = email;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
